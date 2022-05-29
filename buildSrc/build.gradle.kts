@@ -10,4 +10,5 @@ repositories {
 dependencies {
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.kotlin.serialization.plugin)
+    implementation(libs.shadow.plugin)
 }
