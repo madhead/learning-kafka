@@ -1,0 +1,8 @@
+CREATE TABLE recent_changes_rate_by_wiki
+(
+    WIKI VARCHAR(256),
+    TIME TIMESTAMP,
+    RATE DOUBLE PRECISION,
+
+    PRIMARY KEY (WIKI, TIME)
+);

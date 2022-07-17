@@ -2,3 +2,8 @@
 build
 
 .idea
+
+lenses/lenses-license.json
+kafka/wikipedia-source-connector/offsets.data
+kafka/connectors
+kafka/libs

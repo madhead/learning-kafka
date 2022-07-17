@@ -1,0 +1,346 @@
+{
+    "annotations": {
+        "list": [
+            {
+                "builtIn": 1,
+                "datasource": {
+                    "type": "grafana",
+                    "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "target": {
+                    "limit": 100,
+                    "matchAny": false,
+                    "tags": [],
+                    "type": "dashboard"
+                },
+                "type": "dashboard"
+            }
+        ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "iteration": 1658504156403,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+        {
+            "datasource": {
+                "type": "postgres",
+                "uid": "postgres"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "continuous-YlRd"
+                    },
+                    "custom": {
+                        "axisGridShow": true,
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "fillOpacity": 80,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "lineWidth": 0,
+                        "scaleDistribution": {
+                            "log": 2,
+                            "type": "log"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "changes / min"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 11,
+                "w": 24,
+                "x": 0,
+                "y": 0
+            },
+            "id": 2,
+            "options": {
+                "barRadius": 0,
+                "barWidth": 0.8,
+                "groupWidth": 0.7,
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "hidden",
+                    "placement": "bottom"
+                },
+                "orientation": "vertical",
+                "showValue": "never",
+                "stacking": "none",
+                "text": {},
+                "tooltip": {
+                    "mode": "none",
+                    "sort": "none"
+                },
+                "xField": "wiki",
+                "xTickLabelRotation": 90,
+                "xTickLabelSpacing": 0
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "postgres",
+                        "uid": "postgres"
+                    },
+                    "format": "table",
+                    "group": [],
+                    "metricColumn": "none",
+                    "rawQuery": true,
+                    "rawSql": "SELECT wiki, rate\nFROM (SELECT wiki, time, rate, ROW_NUMBER() OVER (PARTITION BY wiki ORDER BY time DESC) RN\n      FROM recent_changes_rate_by_wiki\n      WHERE rate > 5\n        AND time > NOW() - INTERVAL '1 minute') tmp\nWHERE RN = 1\nORDER BY wiki;",
+                    "refId": "A",
+                    "select": [
+                        [
+                            {
+                                "params": [
+                                    "value"
+                                ],
+                                "type": "column"
+                            }
+                        ]
+                    ],
+                    "table": "recent_changes_rate_by_wiki",
+                    "timeColumn": "time",
+                    "where": []
+                }
+            ],
+            "title": "Rate by wiki",
+            "transparent": true,
+            "type": "barchart"
+        },
+        {
+            "datasource": {
+                "type": "postgres",
+                "uid": "postgres"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "lineInterpolation": "smooth",
+                        "lineStyle": {
+                            "fill": "solid"
+                        },
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "log": 2,
+                            "type": "log"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "changes / min"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 12,
+                "w": 24,
+                "x": 0,
+                "y": 11
+            },
+            "id": 4,
+            "maxDataPoints": 150,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "right"
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "postgres",
+                        "uid": "postgres"
+                    },
+                    "format": "time_series",
+                    "group": [
+                        {
+                            "params": [
+                                "$__interval",
+                                "none"
+                            ],
+                            "type": "time"
+                        }
+                    ],
+                    "metricColumn": "wiki",
+                    "rawQuery": false,
+                    "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  wiki AS metric,\n  avg(rate) AS \"rate\"\nFROM recent_changes_rate_by_wiki\nWHERE\n  $__timeFilter(\"time\") AND\n  wiki IN ($wiki)\nGROUP BY 1,2\nORDER BY 1,2",
+                    "refId": "A",
+                    "select": [
+                        [
+                            {
+                                "params": [
+                                    "rate"
+                                ],
+                                "type": "column"
+                            },
+                            {
+                                "params": [
+                                    "avg"
+                                ],
+                                "type": "aggregate"
+                            },
+                            {
+                                "params": [
+                                    "rate"
+                                ],
+                                "type": "alias"
+                            }
+                        ]
+                    ],
+                    "table": "recent_changes_rate_by_wiki",
+                    "timeColumn": "\"time\"",
+                    "timeColumnType": "timestamp",
+                    "where": [
+                        {
+                            "name": "$__timeFilter",
+                            "params": [],
+                            "type": "macro"
+                        },
+                        {
+                            "datatype": "varchar",
+                            "name": "",
+                            "params": [
+                                "wiki",
+                                "IN",
+                                "($wiki)"
+                            ],
+                            "type": "expression"
+                        }
+                    ]
+                }
+            ],
+            "title": "Rate history",
+            "transparent": true,
+            "type": "timeseries"
+        }
+    ],
+    "refresh": "10s",
+    "schemaVersion": 36,
+    "style": "dark",
+    "tags": [
+        "wikipedia"
+    ],
+    "templating": {
+        "list": [
+            {
+                "current": {
+                    "selected": true,
+                    "text": [
+                        "dewiki",
+                        "enwiki",
+                        "jawiki",
+                        "ruwiki",
+                        "zhwiki"
+                    ],
+                    "value": [
+                        "dewiki",
+                        "enwiki",
+                        "jawiki",
+                        "ruwiki",
+                        "zhwiki"
+                    ]
+                },
+                "datasource": {
+                    "type": "postgres",
+                    "uid": "postgres"
+                },
+                "definition": "SELECT DISTINCT(WIKI) FROM recent_changes_rate_by_wiki;",
+                "hide": 0,
+                "includeAll": false,
+                "multi": true,
+                "name": "wiki",
+                "options": [],
+                "query": "SELECT DISTINCT(WIKI) FROM recent_changes_rate_by_wiki;",
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 1,
+                "type": "query"
+            }
+        ]
+    },
+    "time": {
+        "from": "now-24h",
+        "to": "now"
+    },
+    "timepicker": {
+        "hidden": false,
+        "refresh_intervals": [
+            "1s",
+            "5s",
+            "10s",
+            "30s"
+        ]
+    },
+    "timezone": "utc",
+    "title": "Recent changes",
+    "uid": "wikipedia",
+    "version": 1,
+    "weekStart": "monday"
+}

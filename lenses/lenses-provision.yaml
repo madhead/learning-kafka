@@ -1,0 +1,51 @@
+license:
+  fileRef:
+    filePath: /mnt/lenses-license.json
+
+connections:
+  zookeeper:
+    templateName: Zookeeper
+    tags:
+      - default
+    configurationObject:
+      zookeeperUrls:
+        - zookeeper:2181
+      zookeeperSessionTimeout: 10000
+      zookeeperConnectionTimeout: 10000
+      metricsPort: 42181
+      metricsType: JMX
+      metricsSsl: false
+
+  kafka:
+    templateName: Kafka
+    tags:
+      - default
+    configurationObject:
+      protocol: PLAINTEXT
+      kafkaBootstrapServers:
+        - PLAINTEXT://kafka:29092
+      metricsPort: 49092
+      metricsType: JMX
+      metricsSsl: false
+
+  kafka-connect:
+    templateName: KafkaConnect
+    tags:
+      - default
+    configurationObject:
+      workers:
+        - http://kafka-connect:8083
+      metricsPort: 48083
+      metricsType: JMX
+      metricsSsl: false
+
+  postgres:
+    templateName: PostgreSQL
+    tags:
+      - default
+    configurationObject:
+      host: postgres
+      port: 5432
+      database: wikipedia
+      username: wikipedia
+      sslMode: disable

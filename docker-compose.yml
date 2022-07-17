@@ -1,0 +1,133 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.2.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_PORT}
+      ZOOKEEPER_TICK_TIME: 1000
+      KAFKA_JMX_PORT: 4${ZOOKEEPER_PORT}
+
+  kafka:
+    image: confluentinc/cp-kafka:7.2.0
+    ports:
+      - ${KAFKA_PORT}:${KAFKA_PORT}
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:${ZOOKEEPER_PORT}
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: EXTERNAL:PLAINTEXT,INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: EXTERNAL://localhost:${KAFKA_PORT},INTERNAL://kafka:2${KAFKA_PORT}
+      KAFKA_JMX_PORT: 4${KAFKA_PORT}
+
+  kafka-provision:
+    image: confluentinc/cp-kafka:7.2.0
+    depends_on:
+      - kafka
+    entrypoint:
+      - bash
+      - -c
+    command: |
+      "
+      kafka-topics --bootstrap-server kafka:2${KAFKA_PORT} --list
+      kafka-topics --bootstrap-server kafka:2${KAFKA_PORT} --create --topic mediawiki.recentchange --replication-factor 1 --partitions 10
+      kafka-topics --bootstrap-server kafka:2${KAFKA_PORT} --create --topic mediawiki.recentchange.rate.by_wiki --replication-factor 1 --partitions 10
+      "
+
+  kafka-connect:
+    image: confluentinc/cp-kafka-connect:7.2.0
+    ports:
+      - ${KAFKA_CONNECT_PORT}:${KAFKA_CONNECT_PORT}
+    depends_on:
+      - kafka-provision
+    volumes:
+      - ./kafka/connectors:/mnt/libs
+      - ./kafka/libs:/etc/kafka-connect/jars
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:2${KAFKA_PORT}
+      CONNECT_GROUP_ID: kafka-connect
+      CONNECT_CONFIG_STORAGE_TOPIC: _connect-config
+      CONNECT_OFFSET_STORAGE_TOPIC: _connect-offset
+      CONNECT_STATUS_STORAGE_TOPIC: _connect-status
+      CONNECT_REPLICATION_FACTOR: 1
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.converters.ByteArrayConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.converters.ByteArrayConverter
+      CONNECT_REST_ADVERTISED_HOST_NAME: localhost
+      CONNECT_REST_PORT: ${KAFKA_CONNECT_PORT}
+      CONNECT_LISTENERS: http://0.0.0.0:${KAFKA_CONNECT_PORT}
+      CONNECT_PLUGIN_PATH: /mnt/libs
+      KAFKA_JMX_PORT: 4${KAFKA_CONNECT_PORT}
+
+  kafka-streams:
+    build: kafka/stream
+    depends_on:
+      - kafka-provision
+
+  lenses:
+    image: lensesio/lenses:5.0.1
+    ports:
+      - ${LENSES_PORT}:${LENSES_PORT}
+    depends_on:
+      - kafka
+      - kafka-connect
+    environment:
+      LENSES_PORT: ${LENSES_PORT}
+      LENSES_SECURITY_USER: ${LENSES_SECURITY_USER}
+      LENSES_SECURITY_PASSWORD: ${LENSES_SECURITY_PASSWORD}
+      LENSES_CONNECTORS_INFO: |
+        [
+          {
+            class.name = "me.madhead.kafka.kafka.wikipedia.source.connector.WikipediaSourceConnector"
+            name = "Wikipedia's recent changes"
+            sink = false
+            extractor.class = "io.lenses.config.kafka.connect.SimpleTopicsExtractor"
+            author = "madhead"
+            docs = "https://github.com/madhead/learning-kafka"
+            property = "topic"
+            icon = "schemas.png"
+          }
+        ]
+
+  lenses-provision:
+    image: lensesio/lenses-cli:5.0.1
+    depends_on:
+      - lenses
+    volumes:
+      - ./lenses/lenses-provision.yaml:/mnt/lenses-provision.yaml
+      - ./lenses/lenses-license.json:/mnt/lenses-license.json
+    entrypoint:
+      - bash
+      - -c
+    command:
+      - >
+        lenses-cli provision
+        --wait-for-lenses
+        --host=lenses:${LENSES_PORT}
+        --user=${LENSES_SECURITY_USER}
+        --pass=${LENSES_SECURITY_PASSWORD}
+        /mnt/lenses-provision.yaml
+
+  postgres:
+    image: postgres:14
+    volumes:
+      - ./postgres/wikipedia.sql:/docker-entrypoint-initdb.d/wikipedia.sql
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: wikipedia
+      POSTGRES_USER: wikipedia
+
+  grafana:
+    image: grafana/grafana-oss:9.0.3
+    ports:
+      - ${GRAFANA_PORT}:${GRAFANA_PORT}
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/postgres.yaml:/etc/grafana/provisioning/datasources/postgres.yaml
+      - ./grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - ./grafana/wikipedia.json:/var/lib/grafana/dashboards/wikipedia/wikipedia.json

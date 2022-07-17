@@ -1,0 +1,11 @@
+apiVersion: 1
+
+datasources:
+  - name: postgres
+    type: postgres
+    uid: postgres
+    url: postgres:5432
+    database: wikipedia
+    user: wikipedia
+    jsonData:
+      sslmode: 'disable'
