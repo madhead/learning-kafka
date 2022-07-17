@@ -1,0 +1,45 @@
+= Kafka Connect + Streams Example
+
+This repository contains an example of consuming & processing Wikipedia's https://en.wikipedia.org/wiki/Special:RecentChanges[recent changes event stream] with https://kafka.apache.org/documentation/#connect[Kafka Connect] and https://kafka.apache.org/documentation/streams/[Kafka Streams].
+
+IMPORTANT: https://lenses.io/start[Get a free Lenses license] and save it as a `lenses-license.json` in the root of this repository first!
+
+== Autopilot mode
+
+[source,bash]
+----
+./start.sh
+----
+
+Then open http://localhost:9991[Lenses] (user: `admin`, password: `admin`) and start exploring the cluster.
+
+IMPORTANT: The connectors are not started automatically!
+Start them on your own http://localhost:9991/lenses/#/connect/new/kafka-connect[in Lenses]!
+
+Demo visualizations are available in http://localhost:3000/d/wikipedia/recent-changes[Grafana] (`admin` / `admin` as well).
+
+Refer to the <<_expert_mode, expert mode section>> for more.
+
+== Expert mode
+
+Build the project with `./gradlew clean shadowJar`.
+
+Check out link:docker-compose.yml[] and link:.env[] for the details about the environment setup.
+Use `docker-compose up …` to start the environment (or use `./start.sh` which does a clean build and restart).
+
+Read link:kafka/wikipedia-source-connector/README.adoc[source connector's README] to learn how to run it in a https://docs.confluent.io/home/connect/self-managed/userguide.html#standalone-vs-distributed-mode[standalone mode].
+
+Enjoy hacking!
+
+== Links
+
+* https://kafka.apache.org/documentation/#connect[Official Kafka Connect documentation].
+* https://docs.confluent.io/platform/current/connect/index.html[Kafka Connect documentation on Confluent].
+* https://developer.confluent.io/learn-kafka/kafka-connect[Kafka Connect video course on Confluent].
+* https://kafka.apache.org/documentation/streams/[Official Kafka Streams documentation].
+* https://docs.confluent.io/platform/current/streams/index.html[Kafka Streams documentation on Confluent].
+* https://developer.confluent.io/learn-kafka/kafka-streams[Kafka Streams video course on Confluent].
+* https://github.com/confluentinc/cp-demo[Full-stack Confluent Platform guide in, including Kafka Connect and Kafka Streams].
+* https://github.com/confluentinc/learn-kafka-courses[Code for Confluent's video courses].
+* https://github.com/confluentinc/examples[Confluent's curated list of varios demos].
+* https://github.com/confluentinc/kafka-images[Details about Confluent's Kafka Docker images].

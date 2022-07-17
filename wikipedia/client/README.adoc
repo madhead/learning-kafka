@@ -1,0 +1,6 @@
+= wikipedia/client
+
+This directory contains sources for Wikipedia's recent changes event stream client.
+The stream itself is essentialy an https://en.wikipedia.org/wiki/Server-sent_events[SSE] (AKA `text/event-stream`) endpoint, available at `https://stream.wikimedia.org/v2/stream/recentchange`.
+The client converts it into a https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/[Flow] of link:../model/src/main/kotlin/me/madhead/kafka/wikipedia/model/RecentChange.kt[``RecentChange``s].
+This flow is consumed later in a link:../../kafka/wikipedia-source-connector[source connector].

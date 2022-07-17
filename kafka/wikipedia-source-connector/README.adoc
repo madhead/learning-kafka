@@ -1,0 +1,18 @@
+= kafka/wikipedia-source-connector
+
+A https://kafka.apache.org/32/javadoc/org/apache/kafka/connect/source/SourceConnector.html[`SourceConnector`] implementation, consuming a link:../../wikipedia/client[flow] of Wikipedia's recent changes and loading them into a Kafka topic.
+
+== Standalone mode
+
+To start the connector in a standalone mode, switch to this directory, and run this:
+
+[source,bash]
+----
+connect-standalone.sh src/standalone/worker.properties src/standalone/wikipedia-source-connector.properties
+----
+
+== Distributed mode
+
+To start the connector in a distributed mode (although in case of this demo it still means a single instance), use Lenses UI available at http://localhost:9991/lenses/#/connect/new/kafka-connect.
+Mind that Lenses require https://docs.lenses.io/5.0/configuration/static/options/topology[extra configuration] in order to properly display connectors in the topology view.
+This configuration is provided in the link:../../docker-compose.yml[`docker-compose.yml`].

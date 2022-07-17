@@ -1,0 +1,5 @@
+= kafka/postgres-sink-connector
+
+This connector streams link:../stream[processed] data into a link:../../postgres/[PostgreSQL database] to be consumed by link:../../grafana[Grafana] for http://localhost:3000/d/wikipedia/recent-changes[visualization].
+
+link:connector.properties[`connector.properties`] contains the configuration.

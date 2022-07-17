@@ -1,0 +1,12 @@
+= wikipedia
+
+This directory contains sources for Wikipedia's recent changes event stream link:model[] and link:client[].
+
+== Links for nerds
+
+- https://wikitech.wikimedia.org/wiki/Event_Platform/EventStreams
+- https://stream.wikimedia.org/?doc#/streams/get_v2_stream_mediawiki_recentchange
+- https://stream.wikimedia.org/?spec
+- https://schema.wikimedia.org/#!/primary/jsonschema
+- https://gerrit.wikimedia.org/g/mediawiki/services/eventstreams
+- https://github.com/wikimedia/mediawiki-services-eventstreams
