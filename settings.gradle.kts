@@ -7,3 +7,4 @@ rootProject.name = "learning-kafka"
 include(":wikipedia:model")
 include(":wikipedia:client")
 include(":kafka:wikipedia-source-connector")
+include(":kafka:stream")

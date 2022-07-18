@@ -11,7 +11,7 @@ class WikipediaSourceConnector : SourceConnector() {
     override fun version() = VERSION
 
     override fun config(): ConfigDef = ConfigDef()
-        .define(CONFIG_TOPIC, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Destination topic")
+        .define(CONFIG_TOPIC, ConfigDef.Type.STRING, "mediawiki.recentchange", ConfigDef.Importance.HIGH, "Destination topic")
 
     override fun taskClass() = WikipediaSourceTask::class.java
 
