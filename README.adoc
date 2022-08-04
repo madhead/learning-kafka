@@ -2,7 +2,7 @@
 
 This repository contains an example of consuming & processing Wikipedia's https://en.wikipedia.org/wiki/Special:RecentChanges[recent changes event stream] with https://kafka.apache.org/documentation/#connect[Kafka Connect] and https://kafka.apache.org/documentation/streams/[Kafka Streams].
 
-IMPORTANT: https://lenses.io/start[Get a free Lenses license] and save it as a `lenses-license.json` in the root of this repository first!
+IMPORTANT: https://lenses.io/start[Get a free Lenses license] and save it as a `lenses/lenses-license.json` first!
 
 == Autopilot mode
 
